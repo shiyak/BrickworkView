@@ -21,6 +21,11 @@
 - (void)brickworkView:(BrickworkView *)brickworkView didSelect:(BrickworkViewCell *)cell AtIndex:(NSInteger)index;
 - (void)brickworkView:(BrickworkView *)brickworkView didLongPress:(BrickworkViewCell *)cell AtIndex:(NSInteger)index;
 - (void)brickworkView:(BrickworkView *)brickworkView didScrollBelowBottomWithOffset:(CGPoint)offset;
+
+// UIScrollViewDelegate
+- (void)scrollViewDidScroll:(BrickworkView *)brickworkView;
+- (void)scrollViewWillBeginDragging:(BrickworkView *)brickworkView;
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate;
 @end
 
 @protocol BrickworkViewDataSource <NSObject>

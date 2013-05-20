@@ -445,6 +445,9 @@ static CGFloat const kLoadingViewHeight = 44.;
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     [self renderCells];
+    if ([self.delegate respondsToSelector:@selector(scrollViewDidScroll:)]) {
+        [self.delegate scrollViewDidScroll:(BrickworkView *)scrollView];
+    }
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
@@ -452,6 +455,16 @@ static CGFloat const kLoadingViewHeight = 44.;
     CGFloat bottomEdge = scrollView.contentOffset.y + CGRectGetHeight(scrollView.frame);
     if (bottomEdge >= floor(scrollView.contentSize.height)) {
         [self scrollBelowBottom];
+    }
+    if ([self.delegate respondsToSelector:@selector(scrollViewWillBeginDragging:)]) {
+        [self.delegate scrollViewWillBeginDragging:(BrickworkView *)scrollView];
+    }
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+    if ([self.delegate respondsToSelector:@selector(scrollViewDidEndDragging:willDecelerate:)]) {
+        [self.delegate scrollViewDidEndDragging:(BrickworkView *)scrollView willDecelerate:decelerate];
     }
 }
 

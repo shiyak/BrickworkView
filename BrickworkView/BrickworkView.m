@@ -445,8 +445,8 @@ static CGFloat const kLoadingViewHeight = 44.;
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     [self renderCells];
-    if ([self.delegate respondsToSelector:@selector(scrollViewDidScroll:)]) {
-        [self.delegate scrollViewDidScroll:(BrickworkView *)scrollView];
+    if ([self.brickDelegate respondsToSelector:@selector(scrollViewDidScroll:)]) {
+        [self.brickDelegate scrollViewDidScroll:(BrickworkView *)scrollView];
     }
 }
 
@@ -456,15 +456,15 @@ static CGFloat const kLoadingViewHeight = 44.;
     if (bottomEdge >= floor(scrollView.contentSize.height)) {
         [self scrollBelowBottom];
     }
-    if ([self.delegate respondsToSelector:@selector(scrollViewWillBeginDragging:)]) {
-        [self.delegate scrollViewWillBeginDragging:(BrickworkView *)scrollView];
+    if ([self.brickDelegate respondsToSelector:@selector(scrollViewWillBeginDragging:)]) {
+        [self.brickDelegate scrollViewWillBeginDragging:(BrickworkView *)scrollView];
     }
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
-    if ([self.delegate respondsToSelector:@selector(scrollViewDidEndDragging:willDecelerate:)]) {
-        [self.delegate scrollViewDidEndDragging:(BrickworkView *)scrollView willDecelerate:decelerate];
+    if ([self.brickDelegate respondsToSelector:@selector(scrollViewDidEndDragging:willDecelerate:)]) {
+        [self.brickDelegate scrollViewDidEndDragging:(BrickworkView *)scrollView willDecelerate:decelerate];
     }
 }
 

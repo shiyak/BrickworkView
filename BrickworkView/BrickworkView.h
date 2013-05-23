@@ -23,9 +23,11 @@
 - (void)brickworkView:(BrickworkView *)brickworkView didScrollBelowBottomWithOffset:(CGPoint)offset;
 
 // UIScrollViewDelegate
-- (void)scrollViewDidScroll:(BrickworkView *)brickworkView;
-- (void)scrollViewWillBeginDragging:(BrickworkView *)brickworkView;
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView;
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView;
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate;
+- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView;
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView;
 @end
 
 @protocol BrickworkViewDataSource <NSObject>

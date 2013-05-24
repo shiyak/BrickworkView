@@ -76,10 +76,16 @@
 }
 @end
 
+@protocol BrickworkViewCellDelegate <NSObject>
+- (void)didLongPress:(BrickworkViewCell *)cell;
+- (void)didTap:(BrickworkViewCell *)cell;
+@end
+
 @interface BrickworkViewCell () {
     @private
     NSNumber *_number;
 }
+@property (nonatomic, assign) id<BrickworkViewCellDelegate> delegate;
 @property (nonatomic) NSInteger index;
 @property (nonatomic) NSString *reuseIdentifier;
 @property (nonatomic) BOOL touching;
@@ -123,17 +129,13 @@
 
 - (void)handleTap:(id)sender
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"tapCell"
-                                                        object:self
-                                                      userInfo:nil];
+    [self.delegate didTap:self];
 }
 
 - (void)handleLongPress:(id)sender
 {
     if (self.touching) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"longpressCell"
-                                                            object:self
-                                                          userInfo:nil];
+        [self.delegate didLongPress:self];
     }
 }
 
@@ -177,14 +179,6 @@ static CGFloat const kLoadingViewHeight = 44.;
         self.showsVerticalScrollIndicator = NO;
         self.clipsToBounds = NO;
 		self.delegate = self;
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(tapCell:)
-                                                     name:@"tapCell"
-                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(longPressCell:)
-                                                     name:@"longpressCell"
-                                                   object:nil];
         self.loading = NO;
         [self initialize];
     }
@@ -193,12 +187,6 @@ static CGFloat const kLoadingViewHeight = 44.;
 
 - (void)dealloc
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:@"tapCell"
-                                                  object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:@"longpressCell"
-                                                  object:nil];
     self.heightIndices = nil;
     self.visibleCells = nil;
     self.reusableCells = nil;
@@ -269,19 +257,17 @@ static CGFloat const kLoadingViewHeight = 44.;
 }
 
 #pragma mark - NSNotification
-- (void)tapCell:(NSNotification *)notification
+- (void)didLongPress:(BrickworkViewCell *)cell
 {
-    if ([self.brickDelegate respondsToSelector:@selector(brickworkView:didSelect:AtIndex:)]) {
-        BrickworkViewCell *cell = (BrickworkViewCell *)[notification object];
-        [self.brickDelegate brickworkView:self didSelect:cell AtIndex:cell.index];
+    if ([self.brickDelegate respondsToSelector:@selector(brickworkView:didLongPress:AtIndex:)]) {
+        [self.brickDelegate brickworkView:self didLongPress:cell AtIndex:cell.index];
     }
 }
 
-- (void)longPressCell:(NSNotification *)notification
+- (void)didTap:(BrickworkViewCell *)cell
 {
-    if ([self.brickDelegate respondsToSelector:@selector(brickworkView:didLongPress:AtIndex:)]) {
-        BrickworkViewCell *cell = (BrickworkViewCell *)[notification object];
-        [self.brickDelegate brickworkView:self didLongPress:cell AtIndex:cell.index];
+    if ([self.brickDelegate respondsToSelector:@selector(brickworkView:didSelect:AtIndex:)]) {
+        [self.brickDelegate brickworkView:self didSelect:cell AtIndex:cell.index];
     }
 }
 
@@ -389,6 +375,7 @@ static CGFloat const kLoadingViewHeight = 44.;
 
     self.visibleCells = cells.mutableCopy;
     for (BrickworkViewCell *cell in self.visibleCells) {
+        cell.delegate = self;
         if (![cell isDescendantOfView:self]) {
             [self addSubview:cell];
         }

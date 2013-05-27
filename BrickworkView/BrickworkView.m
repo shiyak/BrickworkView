@@ -158,7 +158,7 @@
 
 static CGFloat const kLoadingViewHeight = 44.;
 
-@interface BrickworkView () <UIScrollViewDelegate>
+@interface BrickworkView () <UIScrollViewDelegate, BrickworkViewCellDelegate>
 @property(nonatomic) BOOL loading;
 
 @property (nonatomic, readonly) NSInteger numberOfColumns;

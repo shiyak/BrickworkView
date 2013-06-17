@@ -332,7 +332,9 @@ static CGFloat const kLoadingViewHeight = 44.;
     if ([lastHeights count] > 0) {
         contentHeight = [[lastHeights objectAtIndex:[lastHeights compareGreatestIndex]] floatValue];
     }
-
+    if (self.footerView != nil) {
+        offsetHeight += CGRectGetHeight(self.footerView.bounds)+self.padding;
+    }
     self.contentSize = CGSizeMake(self.frame.size.width, contentHeight + kLoadingViewHeight);
 }
 
@@ -342,6 +344,11 @@ static CGFloat const kLoadingViewHeight = 44.;
         CGFloat height = CGRectGetHeight(self.headerView.bounds);
         self.headerView.center = CGPointMake(CGRectGetWidth(self.bounds)/2, (height/2)+self.padding);
         [self addSubview:self.headerView];
+    }
+    if (self.footerView != nil) {
+        CGFloat height = CGRectGetHeight(self.footerView.bounds);
+        self.footerView.center = CGPointMake(CGRectGetWidth(self.bounds)/2, self.contentSize.height-height/2);
+        [self addSubview:self.footerView];
     }
 }
 

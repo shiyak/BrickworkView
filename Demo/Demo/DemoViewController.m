@@ -35,6 +35,10 @@
     headerLabel.text = @"HEADER";
     headerLabel.textAlignment = UITextAlignmentCenter;
     self.brickworkView.headerView = headerLabel;
+    UILabel *footerLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 50)];
+    footerLabel.text = @"FOOTER";
+    footerLabel.textAlignment = UITextAlignmentCenter;
+    self.brickworkView.footerView = footerLabel;
     [self.view addSubview:self.brickworkView];
     self.brickworkView.brickDataSource = self;
     self.brickworkView.brickDelegate = self;

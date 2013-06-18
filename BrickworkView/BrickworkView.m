@@ -77,8 +77,8 @@
 @end
 
 @protocol BrickworkViewCellDelegate <NSObject>
-- (void)didLongPress:(BrickworkViewCell *)cell;
-- (void)didTap:(BrickworkViewCell *)cell;
+- (void)didLongPress:(BrickworkViewCell *)cell sender:(id)sender;
+- (void)didTap:(BrickworkViewCell *)cell sender:(id)sender;
 @end
 
 @interface BrickworkViewCell () {
@@ -127,15 +127,15 @@
     [self addGestureRecognizer:tapPressGesture];
 }
 
-- (void)handleTap:(id)sender
+- (void)handleTap:(UIGestureRecognizer *)gesture
 {
-    [self.delegate didTap:self];
+    [self.delegate didTap:self sender:gesture];
 }
 
-- (void)handleLongPress:(id)sender
+- (void)handleLongPress:(UIGestureRecognizer *)gesture
 {
     if (self.touching) {
-        [self.delegate didLongPress:self];
+        [self.delegate didLongPress:self sender:gesture];
     }
 }
 
@@ -257,16 +257,20 @@ static CGFloat const kLoadingViewHeight = 44.;
 }
 
 #pragma mark - NSNotification
-- (void)didLongPress:(BrickworkViewCell *)cell
+- (void)didLongPress:(BrickworkViewCell *)cell sender:(id)sender
 {
-    if ([self.brickDelegate respondsToSelector:@selector(brickworkView:didLongPress:AtIndex:)]) {
+    if ([self.brickDelegate respondsToSelector:@selector(brickworkView:didLongPress:AtIndex:sender:)]) {
+        [self.brickDelegate brickworkView:self didLongPress:cell AtIndex:cell.index sender:sender];
+    } else if ([self.brickDelegate respondsToSelector:@selector(brickworkView:didLongPress:AtIndex:)]) {
         [self.brickDelegate brickworkView:self didLongPress:cell AtIndex:cell.index];
     }
 }
 
-- (void)didTap:(BrickworkViewCell *)cell
+- (void)didTap:(BrickworkViewCell *)cell sender:(id)sender
 {
-    if ([self.brickDelegate respondsToSelector:@selector(brickworkView:didSelect:AtIndex:)]) {
+    if ([self.brickDelegate respondsToSelector:@selector(brickworkView:didSelect:AtIndex:sender:)]) {
+        [self.brickDelegate brickworkView:self didSelect:cell AtIndex:cell.index sender:sender];
+    } else if ([self.brickDelegate respondsToSelector:@selector(brickworkView:didSelect:AtIndex:)]) {
         [self.brickDelegate brickworkView:self didSelect:cell AtIndex:cell.index];
     }
 }

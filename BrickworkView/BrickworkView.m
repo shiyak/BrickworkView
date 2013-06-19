@@ -195,17 +195,17 @@ static CGFloat const kLoadingViewHeight = 44.;
 }
 
 #pragma mark -
-- (void)refreshData
+- (void)reloadData
 {
     for (id cell in self.visibleCells) {
         [self recycleCellIntoReusableQueue:(BrickworkViewCell *)cell];
         [cell removeFromSuperview];
     }
     self.visibleCells = @[].mutableCopy;
-    [self reloadData];
+    [self updateData];
 }
 
-- (void)reloadData
+- (void)updateData
 {
     self.loading = NO;
     [self initialize];

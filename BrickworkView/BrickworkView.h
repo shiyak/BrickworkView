@@ -49,6 +49,6 @@
 @property(nonatomic, strong) UIView *footerView;
 
 - (id)dequeueReusableCellWithIdentifier:(NSString *)identifier;
-- (void)refreshData; // clear visibleCells to reloadData
 - (void)reloadData;
+- (void)updateData;// clear visibleCells to updateData
 @end

@@ -228,6 +228,22 @@ static CGFloat const kLoadingViewHeight = 44.;
     }
 }
 
+- (void)setHeaderView:(UIView *)headerView
+{
+    _headerView = headerView;
+    if (self.brickDataSource != nil && self.brickDelegate != nil) {
+        [self initialize];
+    }
+}
+
+- (void)setFooterView:(UIView *)footerView
+{
+    _footerView = footerView;
+    if (self.brickDataSource != nil && self.brickDelegate != nil) {
+        [self initialize];
+    }
+}
+
 - (NSInteger)numberOfColumns
 {
     return [self.brickDataSource numberOfColumnsInBrickworkView:self];

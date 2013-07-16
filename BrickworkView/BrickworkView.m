@@ -405,6 +405,7 @@ static CGFloat const kLoadingViewHeight = 44.;
         cell.delegate = self;
         if (![cell isDescendantOfView:self]) {
             [self addSubview:cell];
+            [cell layoutSubviews];
         }
     }
 }

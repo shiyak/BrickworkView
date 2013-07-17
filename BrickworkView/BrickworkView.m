@@ -353,7 +353,7 @@ static CGFloat const kLoadingViewHeight = 44.;
         contentHeight = [[lastHeights objectAtIndex:[lastHeights compareGreatestIndex]] floatValue];
     }
     if (self.footerView != nil) {
-        offsetHeight += CGRectGetHeight(self.footerView.bounds)+self.padding;
+        contentHeight += CGRectGetHeight(self.footerView.bounds)+self.padding;
     }
     self.contentSize = CGSizeMake(self.frame.size.width, contentHeight + kLoadingViewHeight);
 }

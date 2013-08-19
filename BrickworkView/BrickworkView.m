@@ -142,11 +142,13 @@
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     self.touching = YES;
+    [super touchesBegan:touches withEvent:event];
 }
 
 -(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
     self.touching = NO;
+    [super touchesCancelled:touches withEvent:event];
 }
 
 - (void)dealloc

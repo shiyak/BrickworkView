@@ -166,7 +166,7 @@ static CGFloat const kLoadingViewHeight = 44.;
 @property (nonatomic, readonly) NSInteger numberOfColumns;
 @property (nonatomic) NSInteger numberOfCells;
 @property (nonatomic, readonly) CGPoint lazyOffset;
-@property (nonatomic, strong) NSMutableArray *heightIndices;
+@property (nonatomic, strong) NSMutableArray *heightIndexes;
 @property (nonatomic, strong) NSMutableArray *visibleCells;
 @property (nonatomic, strong) NSMutableDictionary *reusableCells;
 @end
@@ -189,7 +189,7 @@ static CGFloat const kLoadingViewHeight = 44.;
 
 - (void)dealloc
 {
-    self.heightIndices = nil;
+    self.heightIndexes = nil;
     self.visibleCells = nil;
     self.reusableCells = nil;
     self.brickDataSource = nil;
@@ -318,9 +318,9 @@ static CGFloat const kLoadingViewHeight = 44.;
 - (void)initialize
 {
     self.numberOfCells = [self.brickDataSource numberOfCellsInBrickworkView:self];
-    self.heightIndices = @[].mutableCopy;
+    self.heightIndexes = @[].mutableCopy;
     for (int i=0; i<[self.brickDataSource numberOfColumnsInBrickworkView:self]; i++) {
-        [self.heightIndices addObject:@[].mutableCopy];
+        [self.heightIndexes addObject:@[].mutableCopy];
     }
     [self adjustContent];
     [self setup];
@@ -344,7 +344,7 @@ static CGFloat const kLoadingViewHeight = 44.;
         lowerColumn = [lastHeights compareLeastIndex];
         CGFloat height = [[lastHeights objectAtIndex:lowerColumn] floatValue];
         BWIndexPath *indexPath = [BWIndexPath indexPathWithIndex:index column:lowerColumn height:height];
-        [[self.heightIndices objectAtIndex:lowerColumn] addObject:indexPath];
+        [[self.heightIndexes objectAtIndex:lowerColumn] addObject:indexPath];
         height += ([self.brickDelegate brickworkView:self heightForCellAtIndex:index] + self.padding);
 
         [lastHeights setObject:[NSNumber numberWithFloat:height] atIndexedSubscript:lowerColumn];
@@ -422,8 +422,8 @@ static CGFloat const kLoadingViewHeight = 44.;
 - (NSArray *)getBWIndexPaths:(CGPoint)offset limit:(CGSize)limit
 {
     NSMutableArray *indexPaths = @[].mutableCopy;
-    for (int column=0; column<[self.heightIndices count]; column++) {
-        NSArray *list = [self.heightIndices objectAtIndex:column];
+    for (int column=0; column<[self.heightIndexes count]; column++) {
+        NSArray *list = [self.heightIndexes objectAtIndex:column];
         for (int i=0; i<[list count]; i++) {
             BWIndexPath *indexPath = [list objectAtIndex:i];
             if (offset.y <= indexPath.height && indexPath.height <= offset.y + limit.height) {

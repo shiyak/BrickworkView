@@ -467,14 +467,15 @@ static CGFloat const kLoadingViewHeight = 44.;
     if ([self.brickDelegate respondsToSelector:@selector(scrollViewDidScroll:)]) {
         [self.brickDelegate scrollViewDidScroll:scrollView];
     }
-}
 
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
-{
     CGFloat bottomEdge = scrollView.contentOffset.y + CGRectGetHeight(scrollView.frame);
     if (bottomEdge >= floor(scrollView.contentSize.height)) {
         [self scrollBelowBottom];
     }
+}
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
     if ([self.brickDelegate respondsToSelector:@selector(scrollViewWillBeginDragging:)]) {
         [self.brickDelegate scrollViewWillBeginDragging:scrollView];
     }
@@ -503,7 +504,9 @@ static CGFloat const kLoadingViewHeight = 44.;
 
 - (void)scrollBelowBottom
 {
-    if (self.loading) return;
+    if (self.loading) {
+        return;
+    }
 
     self.loading = YES;
     if ([self.brickDelegate respondsToSelector:@selector(brickworkView:didScrollBelowBottomWithOffset:)]) {

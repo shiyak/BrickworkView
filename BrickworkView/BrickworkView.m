@@ -46,14 +46,14 @@
 }
 @end
 
-@interface BFIndexPath : NSObject
+@interface BWIndexPath : NSObject
 @property (nonatomic, readonly) NSUInteger index;
 @property (nonatomic, readonly) NSUInteger column;
 @property (nonatomic, readonly) CGFloat height;
 + (id)indexPathWithIndex:(NSUInteger)index column:(NSInteger)column height:(CGFloat)height;
 @end
 
-@implementation BFIndexPath
+@implementation BWIndexPath
 + (id)indexPathWithIndex:(NSUInteger)index column:(NSInteger)column height:(CGFloat)height
 {
     return [[self alloc]initWithIndex:index column:column height:height];
@@ -72,7 +72,7 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<BFIndexPath index:%d, column:%d, height:%.1f>", self.index, self.column, self.height];
+    return [NSString stringWithFormat:@"<BWIndexPath index:%d, column:%d, height:%.1f>", self.index, self.column, self.height];
 }
 @end
 
@@ -343,7 +343,7 @@ static CGFloat const kLoadingViewHeight = 44.;
     for (int index = 0; index< self.numberOfCells; index++) {
         lowerColumn = [lastHeights compareLeastIndex];
         CGFloat height = [[lastHeights objectAtIndex:lowerColumn] floatValue];
-        BFIndexPath *indexPath = [BFIndexPath indexPathWithIndex:index column:lowerColumn height:height];
+        BWIndexPath *indexPath = [BWIndexPath indexPathWithIndex:index column:lowerColumn height:height];
         [[self.heightIndices objectAtIndex:lowerColumn] addObject:indexPath];
         height += ([self.brickDelegate brickworkView:self heightForCellAtIndex:index] + self.padding);
 
@@ -377,7 +377,7 @@ static CGFloat const kLoadingViewHeight = 44.;
 - (void)renderCells
 {
     CGSize limit = CGSizeMake(CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds)*3);
-    NSMutableArray *indexPaths = [self getBFIndexPaths:self.lazyOffset limit:limit].mutableCopy;
+    NSMutableArray *indexPaths = [self getBWIndexPaths:self.lazyOffset limit:limit].mutableCopy;
 
     NSMutableArray *cells = @[].mutableCopy;
     // remove not visibled cells
@@ -385,7 +385,7 @@ static CGFloat const kLoadingViewHeight = 44.;
         BOOL include = NO;
         NSInteger index = 0;
         for (int i=0; i<[indexPaths count]; i++) {
-            BFIndexPath *indexPath = [indexPaths objectAtIndex:i];
+            BWIndexPath *indexPath = [indexPaths objectAtIndex:i];
             if (indexPath.index == cell.index) {
                 include = YES;
                 index = i;
@@ -419,13 +419,13 @@ static CGFloat const kLoadingViewHeight = 44.;
     return CGPointMake((x>0.)?x:0., (y>0.)?y:0.);
 }
 
-- (NSArray *)getBFIndexPaths:(CGPoint)offset limit:(CGSize)limit
+- (NSArray *)getBWIndexPaths:(CGPoint)offset limit:(CGSize)limit
 {
     NSMutableArray *indexPaths = @[].mutableCopy;
     for (int column=0; column<[self.heightIndices count]; column++) {
         NSArray *list = [self.heightIndices objectAtIndex:column];
         for (int i=0; i<[list count]; i++) {
-            BFIndexPath *indexPath = [list objectAtIndex:i];
+            BWIndexPath *indexPath = [list objectAtIndex:i];
             if (offset.y <= indexPath.height && indexPath.height <= offset.y + limit.height) {
                 [indexPaths addObject:indexPath];
             } else if (indexPath.height > offset.y + limit.height) {
@@ -439,13 +439,13 @@ static CGFloat const kLoadingViewHeight = 44.;
 - (NSArray *)getCellsWithIndexPaths:(NSArray *)indexPaths
 {
     NSMutableArray *cells = @[].mutableCopy;
-    for (BFIndexPath *indexPath in indexPaths) {
+    for (BWIndexPath *indexPath in indexPaths) {
         [cells addObject:[self cellAtIndexPath:indexPath]];
     }
     return cells.copy;
 }
 
-- (BrickworkViewCell *)cellAtIndexPath:(BFIndexPath *)indexPath
+- (BrickworkViewCell *)cellAtIndexPath:(BWIndexPath *)indexPath
 {
     BrickworkViewCell *cell = [self.brickDataSource brickworkView:self cellAtIndex:indexPath.index];
     cell.index = indexPath.index;

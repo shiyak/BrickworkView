@@ -20,10 +20,10 @@
     id benchmark = nil;
     NSInteger index = 0;
     for (NSInteger i=0; i<[self count]; i++) {
-        if (!benchmark) benchmark = [self objectAtIndex:i];
+        if (!benchmark) benchmark = self[i];
 
-        if (floor([[self objectAtIndex:i] floatValue]) < floor([benchmark floatValue])) {
-            benchmark = [self objectAtIndex:i];
+        if (floor([self[i] floatValue]) < floor([benchmark floatValue])) {
+            benchmark = self[i];
             index = i;
         }
     }
@@ -35,10 +35,10 @@
     id benchmark = nil;
     NSInteger index = 0;
     for (NSInteger i=0; i<[self count]; i++) {
-        if (!benchmark) benchmark = [self objectAtIndex:i];
+        if (!benchmark) benchmark = self[i];
 
-        if (floor([[self objectAtIndex:i] floatValue]) > floor([benchmark floatValue])) {
-            benchmark = [self objectAtIndex:i];
+        if (floor([self[i] floatValue]) > floor([benchmark floatValue])) {
+            benchmark = self[i];
             index = i;
         }
     }
@@ -86,7 +86,7 @@
     NSNumber *_number;
 }
 @property (nonatomic, assign) id<BrickworkViewCellDelegate> delegate;
-@property (nonatomic) NSInteger index;
+@property (nonatomic) NSInteger bwIndex;
 @property (nonatomic) NSString *reuseIdentifier;
 @property (nonatomic) BOOL touching;
 @end
@@ -102,12 +102,12 @@
 }
 
 #pragma mark - setter/getter
-- (void)setIndex:(NSInteger)index
+- (void)setBwIndex:(NSInteger)bwIndex
 {
-    _number = [NSNumber numberWithInteger:index];
+    _number = @(bwIndex);
 }
 
-- (NSInteger)index
+- (NSInteger)bwIndex
 {
     if (_number != nil) {
         return [_number integerValue];
@@ -189,18 +189,18 @@ static CGFloat const kLoadingViewHeight = 44.;
 
 - (void)dealloc
 {
-    self.heightIndexes = nil;
-    self.visibleCells = nil;
-    self.reusableCells = nil;
-    self.brickDataSource = nil;
-    self.brickDelegate = nil;
+    _heightIndexes = nil;
+    _visibleCells = nil;
+    _reusableCells = nil;
+    _brickDataSource = nil;
+    _brickDelegate = nil;
 }
 
 #pragma mark -
 - (void)reloadData
 {
     for (id cell in self.visibleCells) {
-        [self recycleCellIntoReusableQueue:(BrickworkViewCell *)cell];
+        [self recycleCellIntoReusableQueue:cell];
         [cell removeFromSuperview];
     }
     self.visibleCells = @[].mutableCopy;
@@ -217,33 +217,25 @@ static CGFloat const kLoadingViewHeight = 44.;
 - (void)setBrickDataSource:(id<BrickworkViewDataSource>)brickDataSource
 {
     _brickDataSource = brickDataSource;
-    if (_brickDataSource != nil && _brickDelegate != nil) {
-        [self initialize];
-    }
+    [self initialize];
 }
 
 - (void)setBrickDelegate:(id<BrickworkViewDelegate>)brickDelegate
 {
     _brickDelegate = brickDelegate;
-    if (_brickDataSource != nil && _brickDelegate != nil) {
-        [self initialize];
-    }
+    [self initialize];
 }
 
 - (void)setHeaderView:(UIView *)headerView
 {
     _headerView = headerView;
-    if (self.brickDataSource != nil && self.brickDelegate != nil) {
-        [self initialize];
-    }
+    [self initialize];
 }
 
 - (void)setFooterView:(UIView *)footerView
 {
     _footerView = footerView;
-    if (self.brickDataSource != nil && self.brickDelegate != nil) {
-        [self initialize];
-    }
+    [self initialize];
 }
 
 - (NSInteger)numberOfColumns
@@ -278,26 +270,27 @@ static CGFloat const kLoadingViewHeight = 44.;
 - (void)didLongPress:(BrickworkViewCell *)cell sender:(id)sender
 {
     if ([self.brickDelegate respondsToSelector:@selector(brickworkView:didLongPress:AtIndex:sender:)]) {
-        [self.brickDelegate brickworkView:self didLongPress:cell AtIndex:cell.index sender:sender];
+        [self.brickDelegate brickworkView:self didLongPress:cell AtIndex:cell.bwIndex sender:sender];
     } else if ([self.brickDelegate respondsToSelector:@selector(brickworkView:didLongPress:AtIndex:)]) {
-        [self.brickDelegate brickworkView:self didLongPress:cell AtIndex:cell.index];
+        [self.brickDelegate brickworkView:self didLongPress:cell AtIndex:cell.bwIndex];
     }
 }
 
 - (void)didTap:(BrickworkViewCell *)cell sender:(id)sender
 {
     if ([self.brickDelegate respondsToSelector:@selector(brickworkView:didSelect:AtIndex:sender:)]) {
-        [self.brickDelegate brickworkView:self didSelect:cell AtIndex:cell.index sender:sender];
+        [self.brickDelegate brickworkView:self didSelect:cell AtIndex:cell.bwIndex sender:sender];
     } else if ([self.brickDelegate respondsToSelector:@selector(brickworkView:didSelect:AtIndex:)]) {
-        [self.brickDelegate brickworkView:self didSelect:cell AtIndex:cell.index];
+        [self.brickDelegate brickworkView:self didSelect:cell AtIndex:cell.bwIndex];
     }
 }
 
 #pragma mark - reusable
 - (id)dequeueReusableCellWithIdentifier:(NSString *)identifier
 {
-    if (!identifier || identifier == 0 ) return nil;
-    if ([self.reusableCells objectForKey:identifier] != nil &&
+    if (identifier &&
+        self.reusableCells &&
+        [self.reusableCells objectForKey:identifier] &&
         [[self.reusableCells objectForKey:identifier] count] > 0) {
         id cell = [[self.reusableCells objectForKey:identifier] lastObject];
         [[self.reusableCells objectForKey:identifier] removeLastObject];
@@ -315,8 +308,17 @@ static CGFloat const kLoadingViewHeight = 44.;
 }
 
 #pragma mark -
+- (BOOL)validateToInitialize
+{
+    return _brickDataSource && _brickDelegate;
+}
+
 - (void)initialize
 {
+    if (![self validateToInitialize]) {
+        return;
+    }
+
     self.numberOfCells = [self.brickDataSource numberOfCellsInBrickworkView:self];
     self.heightIndexes = @[].mutableCopy;
     for (int i=0; i<[self.brickDataSource numberOfColumnsInBrickworkView:self]; i++) {
@@ -333,7 +335,7 @@ static CGFloat const kLoadingViewHeight = 44.;
     NSUInteger lowerColumn = 0;
     NSMutableArray *lastHeights = @[].mutableCopy;
     CGFloat offsetHeight = self.padding;
-    if (self.headerView != nil) {
+    if (self.headerView) {
         offsetHeight += CGRectGetHeight(self.headerView.bounds)+self.padding;
     }
     for (int i=0; i<[self.brickDataSource numberOfColumnsInBrickworkView:self]; i++) {
@@ -342,19 +344,19 @@ static CGFloat const kLoadingViewHeight = 44.;
 
     for (int index = 0; index< self.numberOfCells; index++) {
         lowerColumn = [lastHeights compareLeastIndex];
-        CGFloat height = [[lastHeights objectAtIndex:lowerColumn] floatValue];
+        CGFloat height = [lastHeights[lowerColumn] floatValue];
         BWIndexPath *indexPath = [BWIndexPath indexPathWithIndex:index column:lowerColumn height:height];
-        [[self.heightIndexes objectAtIndex:lowerColumn] addObject:indexPath];
+        [self.heightIndexes[lowerColumn] addObject:indexPath];
         height += ([self.brickDelegate brickworkView:self heightForCellAtIndex:index] + self.padding);
 
-        [lastHeights setObject:[NSNumber numberWithFloat:height] atIndexedSubscript:lowerColumn];
+        [lastHeights setObject:@(height) atIndexedSubscript:lowerColumn];
     }
 
     CGFloat contentHeight = 0.;
     if ([lastHeights count] > 0) {
-        contentHeight = [[lastHeights objectAtIndex:[lastHeights compareGreatestIndex]] floatValue];
+        contentHeight = [lastHeights[[lastHeights compareGreatestIndex]] floatValue];
     }
-    if (self.footerView != nil) {
+    if (self.footerView) {
         contentHeight += CGRectGetHeight(self.footerView.bounds)+self.padding;
     }
     self.contentSize = CGSizeMake(self.frame.size.width, contentHeight + kLoadingViewHeight);
@@ -362,12 +364,12 @@ static CGFloat const kLoadingViewHeight = 44.;
 
 - (void)setup
 {
-    if (self.headerView != nil) {
+    if (self.headerView) {
         CGFloat height = CGRectGetHeight(self.headerView.bounds);
         self.headerView.center = CGPointMake(CGRectGetWidth(self.bounds)/2, (height/2)+self.padding);
         [self addSubview:self.headerView];
     }
-    if (self.footerView != nil) {
+    if (self.footerView) {
         CGFloat height = CGRectGetHeight(self.footerView.bounds);
         self.footerView.center = CGPointMake(CGRectGetWidth(self.bounds)/2, self.contentSize.height-height/2);
         [self addSubview:self.footerView];
@@ -385,14 +387,14 @@ static CGFloat const kLoadingViewHeight = 44.;
         BOOL include = NO;
         NSInteger index = 0;
         for (int i=0; i<[indexPaths count]; i++) {
-            BWIndexPath *indexPath = [indexPaths objectAtIndex:i];
-            if (indexPath.index == cell.index) {
+            BWIndexPath *indexPath = indexPaths[i];
+            if (indexPath.index == cell.bwIndex) {
                 include = YES;
                 index = i;
             }
         }
         if (!include) {
-            [self recycleCellIntoReusableQueue:(BrickworkViewCell *)cell];
+            [self recycleCellIntoReusableQueue:cell];
             [cell removeFromSuperview];
         } else {
             [cells addObject:cell];
@@ -423,9 +425,9 @@ static CGFloat const kLoadingViewHeight = 44.;
 {
     NSMutableArray *indexPaths = @[].mutableCopy;
     for (int column=0; column<[self.heightIndexes count]; column++) {
-        NSArray *list = [self.heightIndexes objectAtIndex:column];
+        NSArray *list = self.heightIndexes[column];
         for (int i=0; i<[list count]; i++) {
-            BWIndexPath *indexPath = [list objectAtIndex:i];
+            BWIndexPath *indexPath = list[i];
             if (offset.y <= indexPath.height && indexPath.height <= offset.y + limit.height) {
                 [indexPaths addObject:indexPath];
             } else if (indexPath.height > offset.y + limit.height) {
@@ -448,7 +450,7 @@ static CGFloat const kLoadingViewHeight = 44.;
 - (BrickworkViewCell *)cellAtIndexPath:(BWIndexPath *)indexPath
 {
     BrickworkViewCell *cell = [self.brickDataSource brickworkView:self cellAtIndex:indexPath.index];
-    cell.index = indexPath.index;
+    cell.bwIndex = indexPath.index;
 
     CGFloat height = [self.brickDelegate brickworkView:self heightForCellAtIndex:indexPath.index];
 
@@ -502,6 +504,7 @@ static CGFloat const kLoadingViewHeight = 44.;
 - (void)scrollBelowBottom
 {
     if (self.loading) return;
+
     self.loading = YES;
     if ([self.brickDelegate respondsToSelector:@selector(brickworkView:didScrollBelowBottomWithOffset:)]) {
         [self.brickDelegate brickworkView:self didScrollBelowBottomWithOffset:self.contentOffset];

@@ -122,33 +122,34 @@
     UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc]
                                                       initWithTarget:self action:@selector(handleLongPress:)];
     [self addGestureRecognizer:longPressGesture];
-    UITapGestureRecognizer *tapPressGesture = [[UITapGestureRecognizer alloc]
-                                                      initWithTarget:self action:@selector(handleTap:)];
-    [self addGestureRecognizer:tapPressGesture];
-}
-
-- (void)handleTap:(UIGestureRecognizer *)gesture
-{
-    [self.delegate didTap:self sender:gesture];
 }
 
 - (void)handleLongPress:(UIGestureRecognizer *)gesture
 {
     if (self.touching) {
-        [self.delegate didLongPress:self sender:gesture];
+        [self.delegate didLongPress:self sender:nil];
     }
 }
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    self.touching = YES;
     [super touchesBegan:touches withEvent:event];
+    self.touching = YES;
 }
 
 -(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    self.touching = NO;
     [super touchesCancelled:touches withEvent:event];
+    self.touching = NO;
+}
+
+-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [super touchesEnded:touches withEvent:event];
+    if (self.touching) {
+        self.touching = NO;
+        [self.delegate didTap:self sender:nil];
+    }
 }
 
 - (void)dealloc
@@ -269,18 +270,14 @@ static CGFloat const kLoadingViewHeight = 44.;
 #pragma mark - NSNotification
 - (void)didLongPress:(BrickworkViewCell *)cell sender:(id)sender
 {
-    if ([self.brickDelegate respondsToSelector:@selector(brickworkView:didLongPress:AtIndex:sender:)]) {
-        [self.brickDelegate brickworkView:self didLongPress:cell AtIndex:cell.bwIndex sender:sender];
-    } else if ([self.brickDelegate respondsToSelector:@selector(brickworkView:didLongPress:AtIndex:)]) {
+    if ([self.brickDelegate respondsToSelector:@selector(brickworkView:didLongPress:AtIndex:)]) {
         [self.brickDelegate brickworkView:self didLongPress:cell AtIndex:cell.bwIndex];
     }
 }
 
 - (void)didTap:(BrickworkViewCell *)cell sender:(id)sender
 {
-    if ([self.brickDelegate respondsToSelector:@selector(brickworkView:didSelect:AtIndex:sender:)]) {
-        [self.brickDelegate brickworkView:self didSelect:cell AtIndex:cell.bwIndex sender:sender];
-    } else if ([self.brickDelegate respondsToSelector:@selector(brickworkView:didSelect:AtIndex:)]) {
+    if ([self.brickDelegate respondsToSelector:@selector(brickworkView:didSelect:AtIndex:)]) {
         [self.brickDelegate brickworkView:self didSelect:cell AtIndex:cell.bwIndex];
     }
 }

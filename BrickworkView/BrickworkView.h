@@ -20,8 +20,6 @@
 @optional
 - (void)brickworkView:(BrickworkView *)brickworkView didSelect:(BrickworkViewCell *)cell AtIndex:(NSInteger)index;
 - (void)brickworkView:(BrickworkView *)brickworkView didLongPress:(BrickworkViewCell *)cell AtIndex:(NSInteger)index;
-- (void)brickworkView:(BrickworkView *)brickworkView didSelect:(BrickworkViewCell *)cell AtIndex:(NSInteger)index sender:(id)sender;
-- (void)brickworkView:(BrickworkView *)brickworkView didLongPress:(BrickworkViewCell *)cell AtIndex:(NSInteger)index sender:(id)sender;
 - (void)brickworkView:(BrickworkView *)brickworkView didScrollBelowBottomWithOffset:(CGPoint)offset;
 
 // UIScrollViewDelegate

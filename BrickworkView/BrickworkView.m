@@ -159,7 +159,6 @@
 }
 @end
 
-static CGFloat const kLoadingViewHeight = 44.;
 
 @interface BrickworkView () <UIScrollViewDelegate, BrickworkViewCellDelegate>
 @property(nonatomic) BOOL loading;
@@ -356,7 +355,7 @@ static CGFloat const kLoadingViewHeight = 44.;
     if (self.footerView) {
         contentHeight += CGRectGetHeight(self.footerView.bounds)+self.padding;
     }
-    self.contentSize = CGSizeMake(self.frame.size.width, contentHeight + kLoadingViewHeight);
+    self.contentSize = CGSizeMake(self.frame.size.width, contentHeight);
 }
 
 - (void)setup
